@@ -182,24 +182,21 @@ export default function Tools() {
         </button>
 
         {pasteLink && (
-  <div className="mt-4">
-    <p className="mb-2 text-blue-700 font-semibold">🔗 Paste created:</p>
-    <div className="relative">
-      <textarea
-        readOnly
-        className="w-full p-3 pr-20 border rounded bg-gray-100 text-sm font-mono resize-none"
-        value={pasteLink}
-        rows={1}
-      />
+  <div className="mt-4 space-y-2">
+    <p className="text-blue-600 font-medium">🔗 Paste created:</p>
+    <div className="flex items-start space-x-2">
+      <pre className="bg-gray-100 p-3 rounded break-words whitespace-pre-wrap">{pasteLink}</pre>
       <button
         onClick={() => navigator.clipboard.writeText(pasteLink)}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+        className="text-xl hover:text-green-600"
+        title="Copy to clipboard"
       >
-        Copy
+        📋
       </button>
     </div>
   </div>
 )}
+
 
         {pasteError && (
           <p className="mt-4 text-red-600">❌ {pasteError}</p>
