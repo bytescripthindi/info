@@ -194,17 +194,21 @@ const handleCopy = () => {
   <div className="mt-4 space-y-2">
     <p className="text-blue-600 font-medium">🔗 Paste created:</p>
     <div className="flex items-start space-x-2">
-      <pre className="bg-gray-100 p-3 rounded break-words whitespace-pre-wrap text-sm">{pasteLink}</pre>
+      <code className="bg-gray-100 px-3 py-2 rounded break-all">{pasteLink}</code>
       <div className="relative">
         <button
-          onClick={handleCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(String(pasteLink).trim());
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
           className="text-xl hover:text-green-600"
           title="Copy to clipboard"
         >
           📋
         </button>
         {copied && (
-          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-600 animate-fade-in">
+          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-600 animate-pulse">
             Copied!
           </span>
         )}
