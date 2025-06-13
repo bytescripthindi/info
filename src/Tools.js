@@ -71,14 +71,18 @@ const handleCopy = () => {
     let frame = 0;
 
     const draw = () => {
-      if (frame >= totalFrames) {
-        recorder.stop();
-        return;
-      }
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      frame++;
-      requestAnimationFrame(draw);
-    };
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+};
+
+const interval = setInterval(() => {
+  draw();
+  frame++;
+  if (frame >= totalFrames) {
+    clearInterval(interval);
+    recorder.stop();
+  }
+}, 1000 / 30); // 30 fps
+
 
     draw();
   };
