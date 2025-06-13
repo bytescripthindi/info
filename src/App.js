@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ManageCases from "./ManageCases"; // Optional if you're managing records
-// If not using this route, you can delete that import + Route
+import Tools from "./Tools";
 
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -118,11 +118,15 @@ export default function App() {
         <Link to="/manage" className="text-blue-600 hover:underline">
           Manage
         </Link>
+        <Link to="/tools" className="text-blue-600 hover:underline">
+          Tools
+        </Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<ColleaguesList />} />
         <Route path="/manage" element={<ManageCases />} /> {/* Optional */}
+        <Route path="/tools" element={<Tools />} /> {/* Optional */}
       </Routes>
     </Router>
   );
