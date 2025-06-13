@@ -91,22 +91,24 @@ const handleCopy = () => {
   setPasteError("");
 
   try {
-    const response = await fetch("https://dpaste.org/api/", {
+    const response = await fetch("https://corsproxy.io/?https://dpaste.org/api/", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: `content=${encodeURIComponent(pasteText)}&syntax=plaintext&expiry_days=7`,
+      body: `content=${encodeURIComponent(pasteText)}&syntax=plaintext`,
     });
 
-    const url = await response.text();
-    setPasteLink(url.trim());
+    const pasteUrl = await response.text(); // returns full URL like https://dpaste.org/abcd1234
+    setPasteLink(pasteUrl.trim());
   } catch (err) {
     setPasteError("Upload failed. Check your internet connection.");
   } finally {
     setPasteLoading(false);
   }
 };
+
+
 
 
   return (
