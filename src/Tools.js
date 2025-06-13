@@ -14,6 +14,15 @@ export default function Tools() {
   const [pasteLink, setPasteLink] = useState("");
   const [pasteError, setPasteError] = useState("");
   const [pasteLoading, setPasteLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+const handleCopy = () => {
+  navigator.clipboard.writeText(pasteLink).then(() => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  });
+};
+
 
   const scrollToTool = (ref) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -185,17 +194,25 @@ export default function Tools() {
   <div className="mt-4 space-y-2">
     <p className="text-blue-600 font-medium">🔗 Paste created:</p>
     <div className="flex items-start space-x-2">
-      <pre className="bg-gray-100 p-3 rounded break-words whitespace-pre-wrap">{pasteLink}</pre>
-      <button
-        onClick={() => navigator.clipboard.writeText(pasteLink)}
-        className="text-xl hover:text-green-600"
-        title="Copy to clipboard"
-      >
-        📋
-      </button>
+      <pre className="bg-gray-100 p-3 rounded break-words whitespace-pre-wrap text-sm">{pasteLink}</pre>
+      <div className="relative">
+        <button
+          onClick={handleCopy}
+          className="text-xl hover:text-green-600"
+          title="Copy to clipboard"
+        >
+          📋
+        </button>
+        {copied && (
+          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-600 animate-fade-in">
+            Copied!
+          </span>
+        )}
+      </div>
     </div>
   </div>
 )}
+
 
 
         {pasteError && (
