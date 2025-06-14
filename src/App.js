@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "./supabaseClient";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import ManageCases from "./ManageCases"; // Optional if you're managing records
+import { supabase } from "./supabaseClient";
+import ManageCases from "./ManageCases";
 import Tools from "./Tools";
 
 function useDebounce(value, delay) {
@@ -16,6 +16,7 @@ function useDebounce(value, delay) {
 function ColleaguesList() {
   const [colleagues, setColleagues] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [copiedUser, setCopiedUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -25,10 +26,7 @@ function ColleaguesList() {
 
   async function fetchColleagues() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("full_colleague_profile")
-      .select("*");
-
+    const { data, error } = await supabase.from("full_colleague_profile").select("*");
     if (error) {
       console.error("Error fetching colleague data:", error);
     } else {
@@ -43,15 +41,15 @@ function ColleaguesList() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-5xl mx-auto p-4">
-      <header className="bg-white shadow p-4 text-center text-2xl font-bold mb-6">
-        Colleagues
+    <div className="min-h-screen bg-gray-50 max-w-6xl mx-auto p-6">
+      <header className="bg-white shadow p-4 text-center text-3xl font-bold text-gray-800 mb-8 rounded-lg">
+        👥 Colleagues Directory
       </header>
 
       <input
         type="text"
-        placeholder="Search by name or username..."
-        className="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="🔍 Search by name or username..."
+        className="w-full p-3 mb-8 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
@@ -63,36 +61,52 @@ function ColleaguesList() {
           {filteredColleagues.map((c) => (
             <div
               key={c.username}
-              className="border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer bg-white"
+              className="relative border rounded-2xl bg-white p-5 shadow-md hover:shadow-xl transition-all duration-200 cursor-pointer"
+              onClick={() => window.open(`/details/${c.username}`, "_blank")}
             >
-              <h2 className="font-semibold text-lg mb-1">{c.name}</h2>
-              <p className="text-sm text-gray-600">Username: {c.username}</p>
-              <p className="text-sm text-gray-600">Address: {c.address}</p>
-              <p className="text-sm text-gray-600">Pincode: {c.pincode}</p>
+              {/* Copy button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(JSON.stringify(c, null, 2));
+                  setCopiedUser(c.username);
+                  setTimeout(() => setCopiedUser(null), 1500);
+                }}
+                title="Copy all fields"
+                className="absolute top-3 right-3 text-gray-500 hover:text-green-600 transition text-xl"
+              >
+                {copiedUser === c.username ? "✅" : "📋"}
+              </button>
+
+              <h2 className="font-bold text-xl text-purple-900 mb-2">👤 Name: {c.name}</h2>
+
+              <p className="mb-1 text-gray-700">🔑 <strong>Username:</strong> {c.username}</p>
+              <p className="mb-1 text-gray-700">📍 <strong>Address:</strong> {c.address}</p>
+              <p className="mb-3 text-gray-700">🏷️ <strong>Pincode:</strong> {c.pincode}</p>
 
               {c.emails?.length > 0 && (
-                <p className="text-sm mt-2"><strong>Emails:</strong> {c.emails.join(", ")}</p>
+                <p className="mb-1 text-gray-700">📧 <strong>Emails:</strong> {c.emails.join(", ")}</p>
               )}
               {c.phones?.length > 0 && (
-                <p className="text-sm"><strong>Phones:</strong> {c.phones.join(", ")}</p>
-              )}
-              {c.posts?.length > 0 && (
-                <p className="text-sm"><strong>Posts:</strong> {c.posts.join(", ")}</p>
-              )}
-              {c.archives?.length > 0 && (
-                <p className="text-sm"><strong>Archives:</strong> {c.archives.join(", ")}</p>
+                <p className="mb-1 text-gray-700">📞 <strong>Phones:</strong> {c.phones.join(", ")}</p>
               )}
               {c.images?.length > 0 && (
-                <p className="text-sm"><strong>Images:</strong> {c.images.join(", ")}</p>
+                <p className="mb-1 text-gray-700">🖼️ <strong>Images:</strong> {c.images.join(", ")}</p>
+              )}
+              {c.posts?.length > 0 && (
+                <p className="mb-1 text-gray-700">🔗 <strong>Posts:</strong> {c.posts.join(", ")}</p>
+              )}
+              {c.archives?.length > 0 && (
+                <p className="mb-1 text-gray-700">📁 <strong>Archives:</strong> {c.archives.join(", ")}</p>
               )}
 
               {c.social_links?.length > 0 && (
-                <div className="text-sm mt-2">
-                  <strong>Social Links:</strong>
-                  <ul className="list-disc ml-5">
+                <div className="mt-3">
+                  <p className="text-gray-700 font-medium mb-1">📣 <strong>Social Links:</strong></p>
+                  <ul className="list-disc ml-5 space-y-1 text-blue-700 underline">
                     {c.social_links.map((s, idx) => (
                       <li key={idx}>
-                        {s.platform}: <a href={s.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{s.link}</a>
+                        {s.platform}: <a href={s.link} target="_blank" rel="noopener noreferrer">{s.link}</a>
                       </li>
                     ))}
                   </ul>
@@ -111,22 +125,16 @@ function ColleaguesList() {
 export default function App() {
   return (
     <Router>
-      <nav className="bg-gray-100 p-4 flex space-x-4 justify-center mb-6">
-        <Link to="/" className="text-blue-600 hover:underline">
-          Home
-        </Link>
-        <Link to="/manage" className="text-blue-600 hover:underline">
-          Manage
-        </Link>
-        <Link to="/tools" className="text-blue-600 hover:underline">
-          Tools
-        </Link>
+      <nav className="bg-gray-100 p-4 flex space-x-4 justify-center mb-6 shadow-sm">
+        <Link to="/" className="text-blue-600 hover:underline font-medium">🏠 Home</Link>
+        <Link to="/manage" className="text-blue-600 hover:underline font-medium">🗃️ Manage</Link>
+        <Link to="/tools" className="text-blue-600 hover:underline font-medium">🛠️ Tools</Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<ColleaguesList />} />
-        <Route path="/manage" element={<ManageCases />} /> {/* Optional */}
-        <Route path="/tools" element={<Tools />} /> {/* Optional */}
+        <Route path="/manage" element={<ManageCases />} />
+        <Route path="/tools" element={<Tools />} />
       </Routes>
     </Router>
   );
